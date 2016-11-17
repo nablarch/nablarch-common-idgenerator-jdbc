@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration xmlns="http://tis.co.jp/nablarch/component-configuration"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration ../../../../../main/resources/component-configuration.xsd">
+
+    <import file="db-default.xml"/>
+
+    <!-- DbManagerの設定 -->
+    <component name="dbManager-default" class="nablarch.core.db.transaction.SimpleDbTransactionManager"/>
+    <component name="dbManager" class="nablarch.core.db.transaction.SimpleDbTransactionManager">
+        <property name="dbTransactionName" value="generator"/>
+    </component>
+
+    <component name="TestSequence" class="nablarch.common.idgenerator.TestSequenceIdGenerator">
+        <property name="idTable">
+            <map>
+                <entry key="01" value="URI_ID_SEQ"/>
+                <entry key="02" value="NYK_ID_SEQ"/>
+                <entry key="03" value="CST_ID_SEQ"/>
+                <entry key="04" value="SKY_ID_SEQ"/>
+                <entry key="SAMPLE" value="SAMPLE"/>
+            </map>
+        </property>
+    </component>
+    <component name="TestSequence2" class="nablarch.common.idgenerator.TestSequenceIdGenerator">
+        <property name="idTable">
+            <map>
+                <entry key="01" value="URI_ID_SEQ"/>
+                <entry key="02" value="NYK_ID_SEQ"/>
+                <entry key="03" value="CST_ID_SEQ"/>
+                <entry key="04" value="SKY_ID_SEQ"/>
+                <entry key="SAMPLE" value="SAMPLE"/>
+            </map>
+        </property>
+        <property name="dbTransactionName" value="generator"/>
+    </component>
+</component-configuration>

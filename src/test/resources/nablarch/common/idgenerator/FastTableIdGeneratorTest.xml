@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration xmlns="http://tis.co.jp/nablarch/component-configuration"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration ../../../../../main/resources/component-configuration.xsd">
+
+    <import file="db-default.xml"/>
+
+    <!-- DbManagerの設定 -->
+    <component name="dbManager-default" class="nablarch.core.db.transaction.SimpleDbTransactionManager">
+    </component>
+    <component name="dbManager" class="nablarch.core.db.transaction.SimpleDbTransactionManager">
+        <property name="dbTransactionName" value="generator"/>
+    </component>
+
+    <component name="idgenerator" class="nablarch.common.idgenerator.FastTableIdGenerator">
+        <property name="tableName" value="sbn_tbl"/>
+        <property name="idColumnName" value="id_col"/>
+        <property name="noColumnName" value="no_col"/>
+        <property name="dbTransactionManager">
+            <component class="nablarch.core.db.transaction.SimpleDbTransactionManager">
+                <property name="dbTransactionName" value="generator"/>
+            </component>
+        </property>
+    </component>
+    <!-- トランザクション名を指定しない場合 -->
+    <component name="idgenerator2" class="nablarch.common.idgenerator.FastTableIdGenerator">
+        <property name="tableName" value="sbn_tbl"/>
+        <property name="idColumnName" value="id_col"/>
+        <property name="noColumnName" value="no_col"/>
+        <property name="dbTransactionManager">
+            <component class="nablarch.core.db.transaction.SimpleDbTransactionManager"/>
+        </property>
+    </component>
+    <component name="initializer" class="nablarch.core.repository.initialization.BasicApplicationInitializer">
+        <property name="initializeList">
+            <list>
+                <component-ref name="idgenerator"/>
+                <component-ref name="idgenerator2"/>
+            </list>
+        </property>
+    </component>
+</component-configuration>
