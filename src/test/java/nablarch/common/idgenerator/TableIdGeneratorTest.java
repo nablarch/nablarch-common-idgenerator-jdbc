@@ -20,6 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.math.BigDecimal;
+
 /**
  * {@link TableIdGenerator}のテストクラス。
  *
@@ -45,10 +47,10 @@ public class TableIdGeneratorTest {
     @Test
     public void generate1() throws Exception {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
         db.beginTransaction();
@@ -61,7 +63,7 @@ public class TableIdGeneratorTest {
             // コミット前は、値がインクリメントされていないこと
             // テーブルが更新されたことを確認
             SbnTbl sbnTbl = VariousDbTestHelper.findById(SbnTbl.class, "02");
-            assertThat(sbnTbl.noCol, is(0L));
+            assertThat(sbnTbl.noCol, is(BigDecimal.ZERO));
 
             db.commitTransaction();
         } finally {
@@ -72,7 +74,7 @@ public class TableIdGeneratorTest {
 
         // テーブルが更新されたことを確認
         SbnTbl sbnTbl = VariousDbTestHelper.findById(SbnTbl.class, "02");
-        assertThat(sbnTbl.noCol, is(1L));
+        assertThat(sbnTbl.noCol, is(BigDecimal.ONE));
     }
 
     /**
@@ -82,10 +84,10 @@ public class TableIdGeneratorTest {
     @Test
     public void generate2() throws Exception {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
         SimpleDbTransactionManager dbGenerator = repositoryResource.getComponent("dbManager");
@@ -114,7 +116,7 @@ public class TableIdGeneratorTest {
 
         // テーブルが更新されたことを確認
         SbnTbl sbnTbl = VariousDbTestHelper.findById(SbnTbl.class, "03");
-        assertThat(sbnTbl.noCol, is(201L));
+        assertThat(sbnTbl.noCol, is(new BigDecimal(201L)));
 
     }
 
@@ -125,10 +127,10 @@ public class TableIdGeneratorTest {
     @Test
     public void generate3() throws Exception {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
         db.beginTransaction();
@@ -149,7 +151,7 @@ public class TableIdGeneratorTest {
 
         // テーブルが更新されたことを確認
         SbnTbl sbnTbl = VariousDbTestHelper.findById(SbnTbl.class, "05");
-        assertThat(sbnTbl.noCol, is(1001L));
+        assertThat(sbnTbl.noCol, is(new BigDecimal(1001L)));
     }
 
     /**
@@ -159,10 +161,10 @@ public class TableIdGeneratorTest {
     @Test
     public void generate4() throws Exception {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
         db.beginTransaction();

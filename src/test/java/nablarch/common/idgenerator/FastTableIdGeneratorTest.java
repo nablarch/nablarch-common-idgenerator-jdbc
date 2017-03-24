@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import nablarch.common.idgenerator.formatter.LpadFormatter;
@@ -14,7 +15,6 @@ import nablarch.core.db.statement.SqlResultSet;
 import nablarch.core.db.transaction.SimpleDbTransactionManager;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
-import nablarch.test.support.db.helper.TargetDb;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 
 import org.junit.BeforeClass;
@@ -47,10 +47,10 @@ public class FastTableIdGeneratorTest {
     public void generate1() {
 
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
         db.beginTransaction();
@@ -82,10 +82,10 @@ public class FastTableIdGeneratorTest {
     @Test
     public void generate2() {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
         db.beginTransaction();
@@ -116,13 +116,12 @@ public class FastTableIdGeneratorTest {
      * 採番処理でエラーが発生した場合
      */
     @Test
-    @TargetDb(exclude = {TargetDb.Db.POSTGRE_SQL, TargetDb.Db.DB2})
     public void generate3() {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 99999L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 9L));
+                new SbnTbl("01", new BigDecimal(99999L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(9L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
         db.beginTransaction();
@@ -156,10 +155,10 @@ public class FastTableIdGeneratorTest {
     @Test(expected = RuntimeException.class)
     public void generate4() {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager");
 
@@ -183,10 +182,10 @@ public class FastTableIdGeneratorTest {
     @Test
     public void generate5() {
         VariousDbTestHelper.setUpTable(
-                new SbnTbl("01", 100L),
-                new SbnTbl("02", 0L),
-                new SbnTbl("03", 200L),
-                new SbnTbl("05", 999L));
+                new SbnTbl("01", new BigDecimal(100L)),
+                new SbnTbl("02", new BigDecimal(0L)),
+                new SbnTbl("03", new BigDecimal(200L)),
+                new SbnTbl("05", new BigDecimal(999L)));
 
         // 既定のトランザクション名でトランザクションを開始
         SimpleDbTransactionManager db = repositoryResource.getComponent("dbManager-default");
