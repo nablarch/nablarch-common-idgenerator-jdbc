@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 
 /**
  * テストテーブル
@@ -15,7 +16,7 @@ public class SbnTbl {
     public SbnTbl() {
     }
     
-    public SbnTbl(String idCol, Long noCol) {
+    public SbnTbl(String idCol, BigDecimal noCol) {
         this.idCol = idCol;
         this.noCol = noCol;
     }
@@ -25,5 +26,5 @@ public class SbnTbl {
     public String idCol;
     
     @Column(name = "NO_COL", length = 5, nullable = false)
-    public Long noCol;
+    public BigDecimal noCol;
 }
