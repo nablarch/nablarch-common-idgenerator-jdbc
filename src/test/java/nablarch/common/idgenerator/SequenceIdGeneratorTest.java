@@ -1,15 +1,7 @@
 package nablarch.common.idgenerator;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import nablarch.common.idgenerator.SequenceIdGenerator.SequenceGeneratorFailedException;
 import nablarch.core.db.DbAccessException;
-import nablarch.core.db.connection.AppDbConnection;
 import nablarch.core.db.connection.ConnectionFactory;
 import nablarch.core.db.connection.DbConnectionContext;
 import nablarch.core.db.connection.TransactionManagerConnection;
@@ -19,15 +11,28 @@ import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.TargetDb;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
-import mockit.Expectations;
-import mockit.Mocked;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 /**
  * {@link SequenceIdGenerator}のテストクラス。
@@ -128,20 +133,23 @@ public class SequenceIdGeneratorTest {
      * {@link SequenceIdGenerator.SequenceGeneratorFailedException}が送出されること。
      */
     @Test
-    public void generateId_recordNotFound(@Mocked DbConnectionContext mockContext) throws Exception {
+    public void generateId_recordNotFound() throws Exception {
         // 採番処理中にSQLExceptionを送出するモックオブジェクトを設定する。
-        new Expectations() {{
-            final AppDbConnection connection = DbConnectionContext.getTransactionManagerConnection(anyString);
-            final SqlPStatement statement = connection.prepareStatement(anyString);
-            final ResultSetIterator rs = statement.executeQuery();
-            rs.next();
-            result = false;
-        }};
-        try {
-            sut.generateId("SEQ2");
-            fail("ここは通らない");
-        } catch (SequenceGeneratorFailedException e) {
-            assertThat(e.getMessage(), is("failed to get next value from sequence. sequence name=[SEQ2]"));
+        try (final MockedStatic<DbConnectionContext> mocked = mockStatic(DbConnectionContext.class)) {
+            final TransactionManagerConnection connection = mock(TransactionManagerConnection.class, RETURNS_DEEP_STUBS);
+            mocked.when(() -> DbConnectionContext.getTransactionManagerConnection(anyString())).thenReturn(connection);
+            
+            final ResultSetIterator rs = Mockito.mock(ResultSetIterator.class);
+            when(connection.prepareStatement(any()).executeQuery()).thenReturn(rs);
+            
+            when(rs.next()).thenReturn(false);
+
+            try {
+                sut.generateId("SEQ2");
+                fail("ここは通らない");
+            } catch (SequenceGeneratorFailedException e) {
+                assertThat(e.getMessage(), is("failed to get next value from sequence. sequence name=[SEQ2]"));
+            }
         }
     }
 
@@ -150,24 +158,25 @@ public class SequenceIdGeneratorTest {
      * ワーニングログが出力されること。
      */
     @Test
-    public void generatedId_ResultSetCloseError(@Mocked DbConnectionContext mockContext) throws Exception {
+    public void generatedId_ResultSetCloseError() throws Exception {
         // 採番処理中にSQLExceptionを送出するモックオブジェクトを設定する。
-        new Expectations() {{
-            final AppDbConnection connection = DbConnectionContext.getTransactionManagerConnection(anyString);
-            final SqlPStatement statement = connection.prepareStatement(anyString);
-            final ResultSetIterator rs = statement.executeQuery();
-            rs.next();
-            result = true;
-            rs.getLong(anyInt);
-            result = 1L;
-            rs.close();
-            result = new DbAccessException("db close error", new SQLException("error"));
-        }};
+        try (final MockedStatic<DbConnectionContext> mocked = mockStatic(DbConnectionContext.class)) {
+            final TransactionManagerConnection connection = mock(TransactionManagerConnection.class, RETURNS_DEEP_STUBS);
+            mocked.when(() -> DbConnectionContext.getTransactionManagerConnection(anyString())).thenReturn(connection);
 
-        final String id = sut.generateId("SEQ2");
-        assertThat(id, is("1"));
+            final ResultSetIterator rs = Mockito.mock(ResultSetIterator.class);
+            when(connection.prepareStatement(any()).executeQuery()).thenReturn(rs);
 
-        OnMemoryLogWriter.assertLogContains("writer.memory", "failed to ResultSetIterator#close");
+            when(rs.next()).thenReturn(true);
+            when(rs.getLong(anyInt())).thenReturn(1L);
+            doThrow(new DbAccessException("db close error", new SQLException("error")))
+                    .when(rs).close();
+
+            final String id = sut.generateId("SEQ2");
+            assertThat(id, is("1"));
+
+            OnMemoryLogWriter.assertLogContains("writer.memory", "failed to ResultSetIterator#close");
+        }
     }
 }
 
