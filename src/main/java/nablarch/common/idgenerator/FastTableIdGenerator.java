@@ -8,7 +8,9 @@ import nablarch.core.transaction.TransactionContext;
 
 /**
  * 採番用のテーブルを使用して高速に採番を行うクラス。<br>
- * 採番用テーブルを使用して採番処理を行い、トランザクションのコミット処理を行う。
+ * 採番用テーブルを使用して採番処理を行い、トランザクションのコミット処理を行う。<br>
+ * <br>
+ * また、本クラスはリポジトリの機能を用いて初期化することを想定しているので、コンポーネント設定ファイルに初期化の設定を行うこと。
  *
  * @author Hisaaki Sioiri
  * @see nablarch.common.idgenerator.TableIdGenerator
